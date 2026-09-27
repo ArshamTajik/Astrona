@@ -1,0 +1,12 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+librosa>=0.10.1
+numpy>=1.24
+soundfile>=0.12
+python-multipart>=0.0.9
+
+# More accurate BPM engine. Ships pre-built wheels for Windows/Mac/Linux —
+# no C++ compiler needed. If it still fails to install on your machine for
+# any reason, that's fine: just delete this line and reinstall — the app
+# automatically falls back to a librosa-based tempo estimate.
+aubio-ledfx>=0.4.9

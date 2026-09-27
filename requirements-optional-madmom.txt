@@ -1,0 +1,15 @@
+# Optional: install this ONLY if you want the more accurate madmom-based
+# BPM engine. It is not required — Astrona works fully without it, using
+# a built-in librosa-based tempo estimate as an automatic fallback.
+#
+#   pip install -r requirements-optional-madmom.txt
+#
+# madmom needs a working C/C++ build toolchain to compile on install.
+# On Windows this usually means installing "Microsoft C++ Build Tools"
+# first (https://visualstudio.microsoft.com/visual-cpp-build-tools/,
+# select the "Desktop development with C++" workload) — without it, the
+# pip install below will fail with a compiler error. If that happens,
+# just skip this file entirely; the app still works normally.
+
+Cython
+madmom

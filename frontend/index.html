@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Astrona — Audio Signal Profiler</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<main>
+
+  <section class="hero">
+    <canvas id="hero-wave"></canvas>
+    <div class="hero-inner">
+      <p class="eyebrow">Signal Analysis</p>
+      <h1>Welcome to Astrona<br><span>By Arsham Tajik</span></h1>
+      <p class="hero-sub">Drop in a track. Astrona reads its energy, brightness, rhythm and
+      tonal center, then estimates its key and tempo the way a trained ear would —
+      by weighing evidence, not guessing off a single peak.</p>
+
+      <div id="dropzone" class="dropzone">
+        <input type="file" id="file-input" accept=".wav,.mp3,.flac,.ogg,.m4a,.aiff,.aif" hidden>
+        <div class="dropzone-glyph">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 6v26M24 6l-9 9M24 6l9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 34v4a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4v-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="dropzone-label">Drop an audio file here, or <span>browse</span></p>
+        <p class="dropzone-hint">WAV · MP3 · FLAC · OGG · M4A · AIFF</p>
+      </div>
+
+      <p id="status-line" class="status-line" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section id="dashboard" class="dashboard hidden">
+
+    <div class="filename-row">
+      <span id="filename-label"></span>
+    </div>
+
+    <div class="readouts">
+      <div class="readout-card readout-bpm">
+        <p class="readout-label">Tempo</p>
+        <p class="readout-value"><span id="bpm-value">—</span><span class="readout-unit">BPM</span></p>
+        <div class="confidence-track"><div id="bpm-confidence-fill" class="confidence-fill"></div></div>
+        <p class="readout-footnote"><span id="bpm-confidence-text">—</span> confidence</p>
+        <div id="bpm-candidates" class="candidate-chips"></div>
+      </div>
+      <div class="readout-card readout-key">
+        <p class="readout-label">Key</p>
+        <p class="readout-value"><span id="key-value">—</span></p>
+        <div class="confidence-track"><div id="key-confidence-fill" class="confidence-fill"></div></div>
+        <p class="readout-footnote"><span id="key-confidence-text">—</span> confidence</p>
+        <div id="key-candidates" class="candidate-chips"></div>
+      </div>
+    </div>
+
+    <div class="metric-grid" id="metric-grid"></div>
+
+    <div class="distortion-card" id="distortion-card">
+      <p class="chart-title">Distortion / clipping</p>
+      <p class="chart-sub" id="distortion-summary">—</p>
+      <div id="distortion-regions" class="distortion-regions"></div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-card">
+        <p class="chart-title">Energy over time</p>
+        <p class="chart-sub">RMS loudness envelope</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-rms"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <p class="chart-title">Loudness (dB)</p>
+        <p class="chart-sub">RMS converted to decibels</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-db"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <p class="chart-title">Brightness over time</p>
+        <p class="chart-sub">Spectral centroid — how bright vs. dark the tone is</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-brightness"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <p class="chart-title">Rhythmic activity</p>
+        <p class="chart-sub">Onset strength — where the beats land</p>
+        <div class="chart-canvas-wrap"><canvas id="chart-beat"></canvas></div>
+      </div>
+      <div class="chart-card chart-card-wide">
+        <p class="chart-title">Chroma over time</p>
+        <p class="chart-sub">Pitch-class energy — the evidence behind the key estimate</p>
+        <canvas id="chroma-canvas"></canvas>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
