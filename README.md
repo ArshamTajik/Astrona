@@ -1,6 +1,6 @@
 <div dir="rtl">
 
-# 🚀 Astrona
+# 🚀 Astrona 
 
 ### پلتفرم تحلیل موسیقی و سیگنال صوتی با Python
 
