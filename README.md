@@ -1,74 +1,340 @@
-# Astrona — Audio Signal Profiler
+<div dir="rtl">
 
-پروژه‌ی وب Astrona: بک‌اند FastAPI که تحلیل صوتی مبتنی بر librosa (همون قابلیت‌های اسکریپت اولیه) رو
-به‌صورت JSON برمی‌گردونه، و یک فرانت‌اند HTML/CSS/JS با تم فضایی که نتایج رو به‌صورت داشبورد،
-نمودار و کارت نمایش می‌ده.
+# 🚀 Astrona
 
-## نصب و اجرا
+### پلتفرم تحلیل موسیقی و سیگنال صوتی با Python
+
+**Astrona** یک پروژه‌ی تحلیلی در حوزه‌ی **Music Information Retrieval (MIR)** و پردازش سیگنال صوتی است که با هدف ترکیب **موسیقی، برنامه‌نویسی و تحلیل داده** ساخته شده است.
+
+ایده‌ی اصلی Astrona این است که یک فایل صوتی را دریافت کند، ویژگی‌های مختلف آن را استخراج و تحلیل کند و نتیجه را به شکل داده‌های قابل فهم و نمودارهای تحلیلی نمایش دهد.
+
+---
+
+## 🎯 هدف پروژه
+
+هدف Astrona فقط ساخت یک Audio Analyzer ساده نیست.
+
+این پروژه برای تجربه‌ی عملی در زمینه‌های زیر شکل گرفته است:
+
+* 🎵 تحلیل و پردازش فایل‌های صوتی
+* 📊 تحلیل داده و استخراج Feature
+* 🧠 پردازش سیگنال صوتی
+* 📈 مصورسازی داده‌ها
+* 💻 توسعه‌ی Backend با Python
+* 🌐 ساخت API و Web Application
+* 🤖 ایجاد پایه برای Machine Learning و AI در آینده
+
+Astrona در واقع نقطه‌ی اتصال دو علاقه‌ی اصلی من است:
+
+**Music × Programming**
+
+---
+
+## 🔍 Astrona چه چیزهایی را تحلیل می‌کند؟
+
+پس از دریافت فایل صوتی، Astrona می‌تواند مجموعه‌ای از ویژگی‌های موسیقی و صوتی را بررسی کند، از جمله:
+
+* 🥁 **BPM / Tempo**
+* 🎹 **Musical Key**
+* ⚡ **Energy**
+* 🔊 **Loudness**
+* ✨ **Spectral Brightness**
+* 💃 **Danceability**
+* 🎼 **Chroma / Pitch Class**
+* 📊 ویژگی‌های آماری سیگنال
+* 📈 نمودارها و Visualizationهای تحلیلی
+
+هدف این است که اطلاعات پیچیده‌ی موجود در یک فایل صوتی به داده‌هایی قابل بررسی و قابل فهم تبدیل شود.
+
+---
+
+## 🧠 تحلیل Key
+
+برای تخمین Key، Astrona از پروفایل‌های مربوط به **Major و Minor** استفاده می‌کند و فضای ۲۴ گام موسیقایی را بررسی می‌کند.
+
+این بخش بر پایه‌ی ایده‌های رایج در **Krumhansl–Schmuckler Key-Finding** طراحی شده است.
+
+به این ترتیب سیستم می‌تواند بین:
+
+**12 Major Keys + 12 Minor Keys**
+
+مقایسه انجام دهد و مناسب‌ترین Key را به عنوان خروجی ارائه کند.
+
+---
+
+## 🥁 تحلیل BPM
+
+Astrona برای تخمین Tempo از ابزارهای پردازش صوت استفاده می‌کند و BPM فایل را استخراج می‌کند.
+
+در معماری پروژه امکان استفاده از ابزارهایی مانند:
+
+* **Aubio**
+* **Librosa**
+* **Madmom** *(اختیاری)*
+
+در نظر گرفته شده است.
+
+---
+
+## 📊 Data Analysis & Visualization
+
+یکی از بخش‌های اصلی Astrona، تبدیل داده‌های صوتی به اطلاعات قابل مشاهده است.
+
+برای این قسمت از ابزارهایی مانند:
+
+* **NumPy** — Numerical Computing
+* **Pandas** — Data Analysis
+* **Matplotlib** — Data Visualization & Analytical Plots
+
+استفاده شده است.
+
+Matplotlib برای نمایش نمودارها و بررسی بصری ویژگی‌های استخراج‌شده از سیگنال صوتی به کار می‌رود.
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+
+* 🐍 **Python**
+* ⚡ **FastAPI**
+* 🚀 **Uvicorn**
+* 🎧 **Librosa**
+* 🔢 **NumPy**
+* 🐼 **Pandas**
+* 📊 **Matplotlib**
+* 🎵 **SoundFile**
+* 🥁 **Aubio**
+
+### Frontend
+
+* 🌐 **HTML**
+* 🎨 **CSS**
+* ⚙️ **JavaScript**
+
+### Core Concepts
+
+* Audio Signal Processing
+* Music Information Retrieval
+* Feature Extraction
+* Data Analysis
+* Data Visualization
+* Statistical Analysis
+* REST API
+* Web Development
+* Machine Learning *(future direction)*
+* Artificial Intelligence *(future direction)*
+
+---
+
+## 🏗️ Architecture
+
+ساختار کلی Astrona به شکل زیر است:
+
+```text
+Audio File
+    │
+    ▼
+Frontend
+    │
+    ▼
+FastAPI Backend
+    │
+    ▼
+Audio Analysis Engine
+    │
+    ├── Tempo / BPM
+    ├── Key Detection
+    ├── Energy
+    ├── Loudness
+    ├── Spectral Features
+    ├── Chroma
+    └── Statistical Features
+    │
+    ▼
+Data Processing
+    │
+    ├── NumPy
+    ├── Pandas
+    └── Matplotlib
+    │
+    ▼
+Analysis Results
+```
+
+---
+
+## 📁 Project Structure
+
+```text
+Astrona/
+│
+├── README.md
+├── requirements.txt
+├── requirements-optional-madmom.txt
+│
+├── backend/
+│   ├── __init__.py
+│   ├── main.py
+│   └── audio_analysis.py
+│
+└── frontend/
+    ├── index.html
+    ├── app.js
+    └── style.css
+```
+
+---
+
+## ⚙️ Installation
+
+ابتدا Repository را Clone کنید:
 
 ```bash
-cd astrona
+git clone https://github.com/ArshamTajik/Astrona.git
+cd Astrona
+```
+
+سپس Dependencies را نصب کنید:
+
+```bash
 pip install -r requirements.txt
-cd backend
-uvicorn main:app --reload
 ```
 
-بعد آدرس `http://127.0.0.1:8000` رو توی مرورگر باز کن. یک فایل صوتی (WAV / MP3 / FLAC / OGG / M4A / AIFF)
-رو بکش و ول کن یا از دکمه‌ی browse انتخابش کن.
+برای اجرای Backend:
 
-> اگر MP3 لود نشد، مطمئن شو که `ffmpeg` روی سیستم نصبه (چون librosa/soundfile برای فرمت‌های
-> فشرده به اون نیاز دارن): `winget install ffmpeg` در ویندوز یا `brew install ffmpeg` در مک.
-
-## ساختار پروژه
-
-```
-astrona/
-├── backend/
-│   ├── main.py            # FastAPI app + endpoint /api/analyze
-│   └── audio_analysis.py  # تمام محاسبات صوتی (از اسکریپت اصلی + کلید/BPM دقیق‌تر)
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   └── app.js
-└── requirements.txt
+```bash
+python -m uvicorn backend.main:app --reload
 ```
 
-## درباره‌ی دقت تشخیص کلید (Key) و ضرب‌آهنگ (BPM)
+پس از اجرای سرور، Web Application از طریق آدرس Local در دسترس خواهد بود.
 
-اسکریپت اولیه کلید رو با نگاه‌کردن به بلندترین بین chroma تشخیص می‌داد که خیلی به نویز حساسه.
-اینجا از الگوریتم **Krumhansl-Schmuckler** استفاده شده: میانگین بردار chroma با ۲۴ پروفایل
-تنال (۱۲ کلید ماژور + ۱۲ کلید مینور، برگرفته از آزمایش‌های ادراک موسیقایی) همبستگی گرفته می‌شه
-و نزدیک‌ترین کلید انتخاب می‌شه — همون منطقی که ابزارهای حرفه‌ای key-detection ازش استفاده می‌کنن،
-بدون نیاز به کتابخونه‌ی سنگینی مثل Essentia که نصبش روی ویندوز/مک معمولاً دردسرسازه.
+---
 
-برای BPM هم به‌جای یک تخمین تک‌عددی، از منحنی تمپوی دینامیک librosa استفاده شده و میانه‌ی اون
-به‌عنوان BPM نهایی گزارش می‌شه؛ پراکندگی این منحنی هم به یک درصد "اطمینان" تبدیل می‌شه که توی
-کارت‌های داشبورد نشون داده می‌شه.
+## 🎧 Supported Audio Formats
 
-اگر بعداً خواستی این بخش رو حتی دقیق‌تر کنی، می‌تونی `audio_analysis.py` رو با یک کتابخونه‌ی
-تخصصی‌تر مثل **madmom** (برای beat tracking عصبی) یا **Essentia** (برای key/BPM state-of-the-art)
-عوض کنی — ساختار فایل طوریه که فقط باید توابع `detect_key` و `detect_bpm` رو جایگزین کنی، بقیه‌ی
-پایپ‌لاین دست‌نخورده می‌مونه.
+Astrona برای فرمت‌های زیر طراحی شده است:
 
-## موتور دقیق‌تر BPM
+```text
+WAV
+MP3
+FLAC
+OGG
+M4A
+AIFF
+AIF
+```
 
-سه موتور برای تشخیص BPM به ترتیب اولویت امتحان می‌شن:
+---
 
-1. **aubio** — پیش‌فرض و توصیه‌شده. توی `requirements.txt` هست، پس با همون
-   `pip install -r requirements.txt` نصب می‌شه. برخلاف madmom، برای ویندوز/مک/لینوکس
-   نسخه‌ی از پیش کامپایل‌شده (wheel) داره، پس نیازی به کامپایلر C++‎ نداره.
-2. **madmom** (اختیاری) — شبکه‌ی عصبی، دقتش خیلی بالاست ولی نصبش روی ویندوز معمولاً
-   نیاز به کامپایلر C++‎ داره (توضیح کامل در `requirements-optional-madmom.txt`).
-3. **librosa** — همیشه در دسترسه، اگه دوتای بالا نبودن یا خطا دادن، خودکار همین
-   استفاده می‌شه.
+## 🤖 AI & Future Development
 
-توی کارت "Tempo" داشبورد، کنار درصد اطمینان می‌نویسه کدوم موتور واقعاً استفاده شده
-(مثلاً `(aubio)` یا `(librosa)`) — این‌جوری همیشه می‌فهمی کدوم داره کار می‌کنه.
+یکی از مسیرهای اصلی توسعه‌ی Astrona، اضافه کردن **Machine Learning و Artificial Intelligence** به سیستم تحلیل موسیقی است.
 
-اگه نصب `aubio-ledfx` هم به هر دلیلی خطا داد، کافیه اون خط رو از `requirements.txt`
-حذف کنی و دوباره `pip install -r requirements.txt` رو بزنی — برنامه بدون اون هم
-(با موتور librosa) کاملاً کار می‌کنه.
+در نسخه‌های آینده، قابلیت‌هایی مانند موارد زیر می‌توانند به پروژه اضافه شوند:
 
-اگه خواستی madmom رو هم امتحان کنی و روی ویندوز به مشکل خوردی، Build Tools رو از این
-آدرس نصب کن و موقع نصب تیک **"Desktop development with C++"** رو بزن:
-https://visualstudio.microsoft.com/visual-cpp-build-tools/
+* 🎼 **Genre Classification**
+* 🎭 **Mood Detection**
+* 🎻 **Instrument Recognition**
+* 🎹 **Advanced Key Detection**
+* 🥁 **Beat & Rhythm Analysis**
+* 🎧 **Music Similarity**
+* 🧬 **Audio Embeddings**
+* 🧠 **Deep Learning Audio Models**
+* 🔎 **Automatic Music Classification**
+
+هدف این بخش تبدیل Astrona از یک سیستم Feature Extraction و Analysis به یک **هوشمندتر Music Analysis Platform** است.
+
+---
+
+## 🚀 Future Roadmap
+
+برنامه‌ی توسعه‌ی Astrona می‌تواند شامل موارد زیر باشد:
+
+* [x] Audio Upload
+* [x] Audio Feature Extraction
+* [x] BPM Analysis
+* [x] Key Analysis
+* [x] Statistical Analysis
+* [x] Data Visualization
+* [x] FastAPI Backend
+* [x] Web Frontend
+* [ ] Machine Learning Models
+* [ ] Genre Prediction
+* [ ] Advanced Music Classification
+* [ ] More Advanced Visualizations
+* [ ] Audio Embedding Models
+* [ ] Deep Learning
+* [ ] Performance Optimization
+* [ ] Automated Testing
+* [ ] Expanded API
+
+---
+
+## 🌌 Why "Astrona"?
+
+نام **Astrona** از فضای اکتشاف و تحلیل الهام گرفته شده است.
+
+همان‌طور که در Astronomy داده‌های عظیمی از ستاره‌ها و اجرام آسمانی جمع‌آوری و تحلیل می‌شوند، Astrona تلاش می‌کند دنیای پیچیده‌ی یک فایل صوتی را به داده‌های قابل تحلیل تبدیل کند.
+
+**Exploring sound through data.**
+
+---
+
+## 👤 About the Creator
+
+<div align="center">
+
+### Arsham Tajik
+
+**Musician • Traditional Singer • Composer • Music Producer • Data Analyst • Python Developer**
+
+</div>
+
+من **Arsham Tajik** هستم؛ موسیقی و برنامه‌نویسی دو بخش مهم مسیر من هستند.
+
+در موسیقی، به عنوان خواننده‌ی موسیقی سنتی ایرانی، نوازنده و آهنگساز فعالیت می‌کنم و در زمینه‌ی تولید موسیقی نیز کار می‌کنم.
+
+در کنار موسیقی، مسیر برنامه‌نویسی و Data Analysis را دنبال می‌کنم و به حوزه‌های:
+
+**Python • Data Analysis • Machine Learning • Deep Learning • Artificial Intelligence**
+
+علاقه‌مندم.
+
+Astrona نتیجه‌ی ترکیب این دو مسیر است:
+
+> **Music + Programming + Data**
+
+---
+
+## 🧠 AI Vision
+
+چشم‌انداز بلندمدت Astrona فقط تحلیل چند Feature صوتی نیست.
+
+هدف این است که پروژه به مرور به سمت سیستم‌هایی حرکت کند که بتوانند **الگوهای موسیقی را درک، مقایسه و طبقه‌بندی کنند**.
+
+ترکیب:
+
+**Audio Processing × Data Analysis × Machine Learning × Deep Learning × AI**
+
+می‌تواند مسیر Astrona را به سمت یک پلتفرم پیشرفته‌تر برای تحلیل موسیقی هدایت کند.
+
+---
+
+## 📌 Project Status
+
+**Astrona — Active Development 🚀**
+
+این پروژه همچنان در حال توسعه است و قابلیت‌های جدید در نسخه‌های آینده به آن اضافه خواهند شد.
+
+---
+
+<div align="center">
+
+### 🎵 Music is data. Data tells a story.
+
+### 🚀 Astrona — Exploring Music Through Data
+
+</div>
+
+</div>
