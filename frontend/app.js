@@ -6,7 +6,11 @@
   let stars = [];
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  let lastW = 0, lastH = 0;
   function resize() {
+    // Phones fire "resize" whenever the address bar slides in/out; don't rebuild the sky for that.
+    if (lastW && window.innerWidth === lastW && Math.abs(window.innerHeight - lastH) < 160) return;
+    lastW = window.innerWidth; lastH = window.innerHeight;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const count = Math.floor((canvas.width * canvas.height) / 9000);
@@ -21,12 +25,15 @@
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const fx = window.AstronaFX;
+    const boost = fx ? fx.smooth || 0 : 0;
+    const rgb = fx ? fx.rgb : [243, 241, 255];
     for (const s of stars) {
-      s.twinkle += 0.015;
-      const alpha = 0.35 + Math.sin(s.twinkle) * 0.25;
+      s.twinkle += 0.015 * (1 + boost * 0.8);
+      const alpha = 0.35 + Math.sin(s.twinkle) * 0.25 + boost * 0.18;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(243, 241, 255, ${Math.max(alpha, 0.08)})`;
+      ctx.arc(s.x, s.y, s.r * (1 + boost * 0.25), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${Math.min(Math.max(alpha, 0.08), 1)})`;
       ctx.fill();
       if (!prefersReducedMotion) {
         s.y += s.drift;
@@ -60,10 +67,11 @@
     const h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
+    const k = 1 + (window.AstronaFX ? window.AstronaFX.smooth || 0 : 0) * 0.5;
     const layers = [
-      { amp: h * 0.05, freq: 0.006, speed: 0.4, color: "rgba(124, 92, 255, 0.35)" },
-      { amp: h * 0.035, freq: 0.009, speed: -0.55, color: "rgba(53, 231, 215, 0.28)" },
-      { amp: h * 0.02, freq: 0.013, speed: 0.7, color: "rgba(243, 241, 255, 0.12)" },
+      { amp: h * 0.05 * k, freq: 0.006, speed: 0.4, color: "rgba(124, 92, 255, 0.35)" },
+      { amp: h * 0.035 * k, freq: 0.009, speed: -0.55, color: "rgba(53, 231, 215, 0.28)" },
+      { amp: h * 0.02 * k, freq: 0.013, speed: 0.7, color: "rgba(243, 241, 255, 0.12)" },
     ];
 
     for (const layer of layers) {
@@ -95,6 +103,22 @@ const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("file-input");
 const statusLine = document.getElementById("status-line");
 const dashboard = document.getElementById("dashboard");
+
+// Music-staff "analyzing" animation (staff-loader.js). When it finishes its
+// fade-out, it calls onDone, which then shows the results.
+let pendingRender = null;
+const staffLoader = new StaffLoader("#staff-loader", {
+  onNote: (n) => {
+    if (window.AstronaFX) window.AstronaFX.pulse(0.2 + ((n.midi - 60) / 21) * 0.25);
+  },
+  onDone: () => {
+    if (pendingRender) {
+      const run = pendingRender;
+      pendingRender = null;
+      run();
+    }
+  },
+});
 
 dropzone.addEventListener("click", () => fileInput.click());
 dropzone.addEventListener("keydown", (e) => {
@@ -131,25 +155,83 @@ function setStatus(message, isError = false) {
   statusLine.classList.toggle("is-error", isError);
 }
 
+let analysisId = 0, analysisCtl = null;
+const cancelBtn = document.createElement("button");
+cancelBtn.type = "button";
+cancelBtn.className = "ax-cancel";
+cancelBtn.textContent = "Cancel";
+cancelBtn.hidden = true;
+(document.querySelector(".ax-stage") || document.getElementById("staff-loader").parentNode).appendChild(cancelBtn);
+
+// While a song is analyzed the staff takes the place of the upload box.
+function showDropzone(show) {
+  dropzone.style.display = show ? "" : "none";
+  cancelBtn.hidden = show;
+}
+cancelBtn.addEventListener("click", () => {
+  analysisId++;
+  if (analysisCtl) analysisCtl.abort();
+  analysisCtl = null;
+  pendingRender = null;
+  staffLoader.hide();
+  if (window.AXX) window.AXX.hideCover();
+  if (window.AstronaFX) window.AstronaFX.analyzing = false;
+  fileInput.value = "";
+  setStatus("");
+  showDropzone(true);
+});
+
 async function handleFile(file) {
+  const myId = ++analysisId;
+  if (analysisCtl) analysisCtl.abort();
+  analysisCtl = new AbortController();
   setStatus(`Analyzing ${file.name}…`);
   dashboard.classList.add("hidden");
+  pendingRender = null;
+  if (window.staffLoaderHide) window.staffLoaderHide();
+  showDropzone(false);
+  staffLoader.start(file);
+  if (window.AXX) window.AXX.showCover(file);
+  if (window.AstronaFX) window.AstronaFX.analyzing = true;
 
   const formData = new FormData();
   formData.append("file", file);
 
   try {
-    const response = await fetch("/api/analyze", { method: "POST", body: formData });
+    const response = await fetch("/api/analyze", { method: "POST", body: formData, signal: analysisCtl.signal });
     const data = await response.json();
+    if (myId !== analysisId) return;
 
     if (!response.ok) {
       throw new Error(data.detail || "Analysis failed.");
     }
 
-    setStatus(`Analyzed ${file.name}`);
-    renderResults(data);
+    // Fill the loader to 100%, let it fade out, then show the results.
+    pendingRender = () => {
+      if (myId !== analysisId) return;
+      if (window.AstronaFX) window.AstronaFX.analyzing = false;
+      setStatus(`Analyzed ${file.name}`);
+      showDropzone(true);
+      fileInput.value = "";
+      if (window.AXX) window.AXX.hideCover();
+      renderResults(data);
+      try {
+        if (window.AX) window.AX.onAnalyzed(data, file);
+        if (window.AXX) window.AXX.buildBio(file);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    staffLoader.finish();
   } catch (err) {
+    if (err && err.name === "AbortError") return;
+    if (myId !== analysisId) return;
+    if (window.AstronaFX) window.AstronaFX.analyzing = false;
+    staffLoader.fail("Analysis failed. Please try again.");
+    if (window.AXX) window.AXX.hideCover();
     setStatus(err.message || "Something went wrong.", true);
+    fileInput.value = "";
+    showDropzone(true);
   }
 }
 
@@ -340,24 +422,31 @@ function renderChroma(chroma) {
   const matrix = chroma.matrix; // notes x time
   const cols = matrix[0].length;
   const rows = notes.length;
-  const cellW = canvas.width / cols;
+  const LABEL_W = 34; // note names sit in their own column, left of the colored cells
+  const cellW = (canvas.width - LABEL_W) / cols;
   const cellH = canvas.height / rows;
 
   let max = 0;
   for (const row of matrix) for (const v of row) if (v > max) max = v;
 
   for (let r = 0; r < rows; r++) {
+    const y = (rows - 1 - r) * cellH;
     for (let c = 0; c < cols; c++) {
       const v = matrix[r][c] / (max || 1);
       const hue = 255 - v * 90; // violet -> cyan ramp
       ctx.fillStyle = `hsla(${hue}, 85%, ${35 + v * 30}%, ${0.25 + v * 0.75})`;
-      ctx.fillRect(c * cellW, (rows - 1 - r) * cellH, cellW + 0.5, cellH + 0.5);
+      ctx.fillRect(LABEL_W + c * cellW, y + 1, cellW + 0.5, Math.max(1, cellH - 2));
     }
+    // thin line between note rows
+    ctx.fillStyle = "rgba(170, 160, 255, 0.16)";
+    ctx.fillRect(0, y + cellH - 0.5, canvas.width, 1);
   }
 
   ctx.font = "10px IBM Plex Mono";
-  ctx.fillStyle = "#8892b0";
+  ctx.fillStyle = "#aab3d1";
+  ctx.textAlign = "right";
   notes.forEach((note, i) => {
-    ctx.fillText(note, 4, (rows - 1 - i) * cellH + cellH * 0.7);
+    ctx.fillText(note, LABEL_W - 6, (rows - 1 - i) * cellH + cellH * 0.68);
   });
+  ctx.textAlign = "left";
 }
